@@ -8,9 +8,7 @@ import axios from 'axios';
 import { SERVER_URL } from '../../config/config.mjs'
 
 const TaskAdder = ({ data }) => {
-  //This is a randomm comment
-  //why
-  //It is marked on green but doesn't have any changes
+  
   const { setUpdatingTodos, input, setInput, showDatePicker, setShowDatePicker, showTimePicker, setShowTimePicker } = data;
 
   const [limitDate, setLimitDate] = useState({})
