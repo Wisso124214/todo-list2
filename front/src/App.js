@@ -7,7 +7,20 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TaskList from './components/taskList/TaskList';
 import axios from 'axios';
 
-import { SERVER_URL } from './config/config.mjs'
+const SERVER_CONFIG_URL = `http://localhost:3011/config` || process.env.SERVER_CONFIG_URL;
+
+const getUrl = async () => {
+  let url = '';
+
+  axios.get(SERVER_CONFIG_URL)
+  .then((res) => {
+    url = res.data.url;
+    return url;
+  })
+
+  return url;
+}
+
 
 const darkTheme = createTheme({
   palette: {
@@ -15,8 +28,10 @@ const darkTheme = createTheme({
   },
 });
 
-function App() {
+async function App() {
 
+  const url = await getUrl();
+  console.log(url);
   const [todos, setTodos] = useState([]);
   const [input, setInput] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -28,7 +43,7 @@ function App() {
       
       if (!todos.length) return;
 
-      axios.get(`${SERVER_URL}/todos`)
+      axios.get(`${url.SERVER_BACK_URL}/todos`)
       .then((res) => {
         const newTodos = res.data;
       //const newTodos = JSON.parse(JSON.stringify(todos));
@@ -59,12 +74,12 @@ function App() {
             todo.limitDate.hour === currentHour &&
             todo.limitDate.minute < currentMinute)
         ) {
-          axios.put(`${SERVER_URL}/todos/` + todo._id, {
+          axios.put(`${url.SERVER_BACK_URL}/todos/` + todo._id, {
             ...todo,
             delayed: true,
           });
         } else {
-          axios.put(`${SERVER_URL}/todos/` + todo._id, {
+          axios.put(`${url.SERVER_BACK_URL}/todos/` + todo._id, {
             ...todo,
             delayed: false,
           });
@@ -78,7 +93,7 @@ function App() {
     if (updatingTodos) {
       setUpdatingTodos(false);
 
-      axios.get(`${SERVER_URL}/todos`)
+      axios.get(`${url.SERVER_BACK_URL}/todos`)
       .then((res) => {
         const newTodos = res.data;
 

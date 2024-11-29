@@ -1,17 +1,29 @@
 import Task from "./Task";
 import axios from 'axios';
 
-import { SERVER_URL } from '../../config/config.mjs'
-
-
 const TaskList = ({ data }) => {
+  
+  const SERVER_CONFIG_URL = `http://localhost:3011/config` || process.env.SERVER_CONFIG_URL;
 
+  const getUrl = async () => {
+    let url = ''
+
+    await axios.get(SERVER_CONFIG_URL)
+    .then((res) => {
+      url = res.data.url;
+      return url
+    })
+    return url;
+  }
+  const url = getUrl();
+  
+  
   const { todos, setTodos, setUpdatingTodos, showDatePicker, showTimePicker } = data;
 
   const maxlength = 22;
 
   const removeTodo = (id) => {
-    axios.delete(`${SERVER_URL}/todos/${id}`)
+    axios.delete(`${url.SERVER_BACK_URL}/todos/${id}`)
     setUpdatingTodos(true)
   };
   

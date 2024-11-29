@@ -5,9 +5,23 @@ import TimeIcon from "./TimeIcon";
 import dayjs from 'dayjs';
 import axios from 'axios';
 
-import { SERVER_URL } from '../../config/config.mjs'
-
 const TaskAdder = ({ data }) => {
+
+  const SERVER_CONFIG_URL = `http://localhost:3011/config` || process.env.SERVER_CONFIG_URL;
+
+  const getUrl = async () => {
+    let url = ''
+
+    await axios.get(SERVER_CONFIG_URL)
+    .then((res) => {
+      url = res.data.url;
+      return url
+    })
+    return url;
+  }
+  const url = getUrl();
+  
+  (async () => console.log('url', await getUrl()))()
   
   const { setUpdatingTodos, input, setInput, showDatePicker, setShowDatePicker, showTimePicker, setShowTimePicker } = data;
 
@@ -52,7 +66,7 @@ const TaskAdder = ({ data }) => {
       delayed: false,
     };
 
-    axios.post(`${SERVER_URL}/todos`, newTodo)
+    axios.post(`${url.SERVER_BACK_URL}/todos`, newTodo)
 
     if (input.trim()) {
       setUpdatingTodos(true)

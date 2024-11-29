@@ -5,4 +5,4 @@ export const config = {
   IP_SERVER: 'localhost',
 }
 
-export const SERVER_URL = `${config.PROTOCOL}://${config.IP_SERVER}:${config.PORT_SERVER}`;
+export const SERVER_BACK_URL = `${config.PROTOCOL}://${config.IP_SERVER}:${config.PORT_SERVER}`;

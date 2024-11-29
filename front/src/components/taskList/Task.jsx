@@ -1,8 +1,21 @@
 import axios from 'axios'
-import { SERVER_URL } from '../../config/config.mjs'
 
 const Task = ({ data }) => {
   
+  const SERVER_CONFIG_URL = `http://localhost:3011/config` || process.env.SERVER_CONFIG_URL;
+
+  const getUrl = async () => {
+    let url = ''
+
+    await axios.get(SERVER_CONFIG_URL)
+    .then((res) => {
+      url = res.data.url;
+      return url
+    })
+    return url;
+  }
+  const url = getUrl();
+
   const { todo, setTodos, setUpdatingTodos, todos, index, removeTodo, splitSentence } = data;
 
   return(
@@ -52,7 +65,7 @@ const Task = ({ data }) => {
                 return item;
               }));
 
-              axios.put(`${SERVER_URL}/todos/${todo._id}`, {
+              axios.put(`${url.SERVER_BACK_URL}/todos/${todo._id}`, {
                 ...todo,
                 completed: !todo.completed
               })
