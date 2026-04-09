@@ -79,12 +79,12 @@ Variables relevantes:
 El parametro principal es `APP_MODE`.
 
 - `APP_MODE=development`
-	- Frontend corre en modo dev (`npm run dev`).
-	- Hot reload y herramientas de desarrollo.
+  - Frontend corre en modo dev (`npm run dev`).
+  - Hot reload y herramientas de desarrollo.
 
 - `APP_MODE=production`
-	- Frontend compila (`npm run build`) y sirve estatico.
-	- Servicios Node reciben `NODE_ENV=production`.
+  - Frontend compila (`npm run build`) y sirve estatico.
+  - Servicios Node reciben `NODE_ENV=production`.
 
 Nota: para backend y servicios Node, el comando de arranque es el mismo, pero cambia el entorno (`NODE_ENV`).
 
