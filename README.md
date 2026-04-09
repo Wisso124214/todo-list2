@@ -59,10 +59,17 @@ El objetivo principal es separar configuracion de codigo y poder ejecutar todo e
 - `docker-compose.yml`: orquestacion de todos los servicios.
 - `docker.env`: variables privadas/locales de ejecucion.
 - `docker.env.example`: plantilla limpia para compartir.
+- `config/.env.example`: plantilla de configuracion del servicio `config`.
+- `db/.env.example`: splantilla de configuracion del servicio `db`.
 
 ## Variables de entorno
 
 Toda la configuracion operativa esta centralizada en `docker.env`.
+
+Ademas, existen plantillas para entornos locales por servicio:
+
+- `config/.env.example`
+- `db/.env.example`
 
 Variables relevantes:
 
@@ -100,6 +107,8 @@ Crear archivo local de entorno desde plantilla:
 
 ```powershell
 Copy-Item .\docker.env.example .\docker.env
+Copy-Item .\config\.env.example .\config\.env
+Copy-Item .\db\.env.example .\db\.env
 ```
 
 Editar valores segun necesidad:
@@ -108,6 +117,12 @@ Editar valores segun necesidad:
 - Tags de imagen.
 - `DB_URL` (local o remota).
 - `APP_MODE` (`development`/`production`).
+
+Campos que deberias revisar obligatoriamente antes de iniciar:
+
+- `DB_URL` en `docker.env` y `config/.env`.
+- Puertos `PORT_*` en `docker.env` para evitar colisiones locales.
+- `REACT_APP_SERVER_CONFIG_URL` en `docker.env` si cambias `PORT_CONFIG`.
 
 ### 3) Build + arranque
 
