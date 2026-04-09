@@ -1,0 +1,113 @@
+name: todo-list2
+
+services:
+  mongo:
+    image: ${MONGO_IMAGE}
+    container_name: ${MONGO_CONTAINER_NAME}
+    restart: unless-stopped
+    ports:
+      - '${MONGO_PORT}:27017'
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  config:
+    image: ${CONFIG_IMAGE}
+    build:
+      context: ./config
+      dockerfile: Dockerfile
+      args:
+        NODE_BASE_IMAGE: ${NODE_BASE_IMAGE}
+    container_name: ${CONFIG_CONTAINER_NAME}
+    restart: unless-stopped
+    env_file:
+      - ./docker.env
+    environment:
+      APP_MODE: ${APP_MODE}
+      NODE_ENV: ${APP_MODE}
+    ports:
+      - '${PORT_CONFIG}:${PORT_CONFIG}'
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  db:
+    image: ${DB_IMAGE}
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+      args:
+        NODE_BASE_IMAGE: ${NODE_BASE_IMAGE}
+    container_name: ${DB_CONTAINER_NAME}
+    restart: unless-stopped
+    env_file:
+      - ./docker.env
+    environment:
+      APP_MODE: ${APP_MODE}
+      NODE_ENV: ${APP_MODE}
+      SERVER_CONFIG_URL: ${SERVER_CONFIG_URL_DOCKER}
+    ports:
+      - '${PORT_DB}:${PORT_DB}'
+    depends_on:
+      config:
+        condition: service_started
+
+  back:
+    image: ${BACK_IMAGE}
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+      args:
+        NODE_BASE_IMAGE: ${NODE_BASE_IMAGE}
+    container_name: ${BACK_CONTAINER_NAME}
+    restart: unless-stopped
+    env_file:
+      - ./docker.env
+    environment:
+      APP_MODE: ${APP_MODE}
+      NODE_ENV: ${APP_MODE}
+      SERVER_CONFIG_URL: ${SERVER_CONFIG_URL_DOCKER}
+    ports:
+      - '${PORT_SERVER}:${PORT_SERVER}'
+    depends_on:
+      db:
+        condition: service_started
+      config:
+        condition: service_started
+
+  front:
+    image: ${FRONT_IMAGE}
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+      args:
+        NODE_BASE_IMAGE: ${NODE_BASE_IMAGE}
+    container_name: ${FRONT_CONTAINER_NAME}
+    restart: unless-stopped
+    env_file:
+      - ./docker.env
+    environment:
+      APP_MODE: ${APP_MODE}
+      NODE_ENV: ${APP_MODE}
+      HOST: 0.0.0.0
+      PORT: ${PORT_FRONT}
+      REACT_APP_SERVER_CONFIG_URL: ${REACT_APP_SERVER_CONFIG_URL}
+      WDS_SOCKET_PORT: 0
+    command: >
+      sh -c "if [ '${APP_MODE}' = 'production' ];
+      then npm run build && npx serve -s build -l ${PORT_FRONT};
+      else npm run dev;
+      fi"
+    ports:
+      - '${PORT_FRONT}:${PORT_FRONT}'
+    depends_on:
+      back:
+        condition: service_started
+
+volumes:
+  mongo-data:

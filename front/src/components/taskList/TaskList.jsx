@@ -1,37 +1,39 @@
-import Task from "./Task";
+import Task from './Task';
 import axios from 'axios';
 
 const TaskList = ({ data }) => {
-  
-  const SERVER_CONFIG_URL = `http://localhost:3011/config` || process.env.SERVER_CONFIG_URL;
+  const SERVER_CONFIG_URL =
+    process.env.REACT_APP_SERVER_CONFIG_URL || 'http://localhost:3011/config';
 
   const getUrl = async () => {
-    let url = ''
+    let url = '';
 
-    await axios.get(SERVER_CONFIG_URL)
-    .then((res) => {
+    await axios.get(SERVER_CONFIG_URL).then((res) => {
       url = res.data.url;
-      return url
-    })
+      return url;
+    });
     return url;
-  }
+  };
   const url = getUrl();
-  
-  
-  const { todos, setTodos, setUpdatingTodos, showDatePicker, showTimePicker } = data;
+
+  const { todos, setTodos, setUpdatingTodos, showDatePicker, showTimePicker } =
+    data;
 
   const maxlength = 22;
 
   const removeTodo = (id) => {
-    axios.delete(`${url.SERVER_BACK_URL}/todos/${id}`)
-    setUpdatingTodos(true)
+    axios.delete(`${url.SERVER_BACK_URL}/todos/${id}`);
+    setUpdatingTodos(true);
   };
-  
+
   const splitSentence = (sentence) => {
-    return sentence.split(' ').map((word, index) => {
-      return splitWord(word, index)
-    }).join(' ')
-  }
+    return sentence
+      .split(' ')
+      .map((word, index) => {
+        return splitWord(word, index);
+      })
+      .join(' ');
+  };
 
   const splitWord = (word, index) => {
     let newWord = '';
@@ -43,12 +45,11 @@ const TaskList = ({ data }) => {
       }
     }
     return newWord;
-  }
+  };
 
-  return(
+  return (
     <div>
-      {
-        !showDatePicker && !showTimePicker &&
+      {!showDatePicker && !showTimePicker && (
         <div
           style={{
             display: 'flex',
@@ -60,12 +61,22 @@ const TaskList = ({ data }) => {
           }}
         >
           {todos.map((todo, index) => (
-            <Task data={{ todo, setTodos, setUpdatingTodos, todos, index, removeTodo, splitSentence }} />
+            <Task
+              data={{
+                todo,
+                setTodos,
+                setUpdatingTodos,
+                todos,
+                index,
+                removeTodo,
+                splitSentence,
+              }}
+            />
           ))}
         </div>
-      }
+      )}
     </div>
-  )
-}
+  );
+};
 
 export default TaskList;
